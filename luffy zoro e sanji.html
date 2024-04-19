@@ -1,0 +1,67 @@
+<html>
+<head>
+
+	<title>Detecção de Objetos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.js"></script>
+
+  <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  
+  <center>
+    <h1 class="btn btn-info heading">Detecção de Objetos</h1>
+    <h3 class="btn btn-danger" id="status"></h3>
+    <br>
+    <a href="index.html" class = "btn">Voltar</a>
+  </center>
+
+  <script>
+    var img = ""
+objects = []
+modelStatus = ""
+function preload() {
+    img = loadImage("luffy zoro e sanji.jpg")
+}
+function setup() {
+    canvas = createCanvas(500, 600)
+    canvas.center()
+    objectDetector = ml5.objectDetector('cocossd', modelLoaded);
+    document.getElementById("status").innerHTML = "detectando personagens e objetos"
+}
+function modelLoaded() {
+    console.log("Modelo Carregado")
+    modelStatus = true
+    objectDetector.detect(img, gotResults)
+}
+function gotResults(error, results) {
+    if (error) {
+        console.log(error)
+    }
+    console.log(results)
+    objects = results
+}
+function draw() {
+    image(img, 0, -50, 500, 750)
+    if (modelStatus != "") {
+        for (var i = 0; i < objects.length; i++) {
+            document.getElementById("status").innerHTML = "o personagem foi detectado"
+            fill("blue")
+            percent = floor(objects[i].confidence * 100)
+            text (objects[i].label + " " + percent + "%", objects[i].x + 15, objects[i].y + 15)
+            noFill()
+            stroke("blue")
+            rect(objects[i].x, objects[i].y, objects[i].width, objects[i].height)
+        }
+    }
+}
+  </script>
+
+</body>
+</html>
